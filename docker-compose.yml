@@ -19,7 +19,7 @@ services:
     image: wordpress:php8.1-apache
     container_name: wordpress
     restart: always
-    env_file: 
+    env_file:
       - .env
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -30,7 +30,6 @@ services:
       - wp_data:/var/www/html
     networks:
       - frontend
-    # Do NOT publish wordpress port to host; nginx will proxy to it.
 
   db:
     image: mariadb:10.5
@@ -42,14 +41,14 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-${DB_PASSWORD}}
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - frontend
 
   pma:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
     container_name: pma
     restart: always
     env_file:
@@ -57,11 +56,8 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      PMA_USER: ${DB_USER}
-      PMA_PASSWORD: ${DB_PASSWORD}
     networks:
       - frontend
-    # no host port; nginx proxies to this service
 
 volumes:
   wp_data:
